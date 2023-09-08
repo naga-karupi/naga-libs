@@ -42,7 +42,7 @@ class Arduino_Rotary_Encoder{
 
 #if STM32_NAGA_LIB
 
-class RE_stm32 {
+class RE_stm32 : encoder{
 	TIM_HandleTypeDef*htim;
 public:
 	explicit RE_stm32(TIM_HandleTypeDef *_htim);
