@@ -1,4 +1,4 @@
-#define STM32_NAGA_LIB
+#define STM32_NAGA_LIB 1
 
 #include "MD.hpp"
 

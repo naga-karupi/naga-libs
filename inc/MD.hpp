@@ -15,7 +15,7 @@ public:
 	virtual void set_reverse(bool reverse_ = false) noexcept = 0;
 };
 
-#ifdef ARDUINO_NAGA_LIB
+#if ARDUINO_NAGA_LIB
 //未実装(使わないし)
 class MD_Arduino{
 	const uint8_t PIN_A, PIN_B, pwm_pin;
@@ -27,7 +27,7 @@ public:
 };
 #endif //ARDUINO_NAGA_LIB
 
-#ifdef STM32_NAGA_LIB
+#if STM32_NAGA_LIB
 struct quad_MD_info 
 {
 	GPIO_TypeDef* port_A; uint16_t PIN_A;
