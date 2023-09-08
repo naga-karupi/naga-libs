@@ -16,6 +16,7 @@ public:
 };
 
 #ifdef ARDUINO_NAGA_LIB
+//未実装(使わないし)
 class MD_Arduino{
 	const uint8_t PIN_A, PIN_B, pwm_pin;
 	int pwm;
