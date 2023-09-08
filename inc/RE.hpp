@@ -21,7 +21,8 @@
 #include<main.h>
 #endif //STM32_NAGA_LIB
 
-namespace naga_libs{
+namespace naga_libs
+{
 
 class encoder {
 	[[nodiscard]]
@@ -35,14 +36,16 @@ class encoder {
 
 #if ARDUINO_NAGA_LIB
 //実装しないよ
-class Arduino_Rotary_Encoder{
+class Arduino_Rotary_Encoder
+{
 
 };
 #endif //ARDUINO_NAGA_LIB
 
 #if STM32_NAGA_LIB
 
-class RE_stm32 : encoder{
+class RE_stm32 : encoder
+{
 	TIM_HandleTypeDef*htim;
 public:
 	explicit RE_stm32(TIM_HandleTypeDef *_htim);

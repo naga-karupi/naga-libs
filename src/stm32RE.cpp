@@ -18,11 +18,13 @@ uint32_t RE_stm32::operator() () noexcept override
     return counter;
 }
 
-void RE_stm32::set_zero() noexcept override{
+void RE_stm32::set_zero() noexcept override
+{
     _HAL_TIM_SET_COUNTER(htim, 0);
 }
 
 [[nodiscard]]
-uint32_t RE_stm32::read() noexcept const override {
+uint32_t RE_stm32::read() noexcept const override 
+{
     return __HAL_TIM_GET_COUNTER(htim);
 }

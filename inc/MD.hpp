@@ -7,8 +7,10 @@
 #include<main.h>
 #endif //STM32_NAGA_LIB
 
-namespace naga_libs{
-class MD {
+namespace naga_libs
+{
+class MD 
+{
 public:
 	virtual void operator () (int32_t) = 0;
 
@@ -17,7 +19,8 @@ public:
 
 #if ARDUINO_NAGA_LIB
 //未実装(使わないし)
-class MD_Arduino{
+class MD_Arduino
+{
 	const uint8_t PIN_A, PIN_B, pwm_pin;
 	int pwm;
 public:
