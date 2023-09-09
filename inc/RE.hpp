@@ -24,7 +24,8 @@
 namespace naga_libs
 {
 
-class encoder {
+class encoder 
+{
 	[[nodiscard]]
 	virtual uint32_t operator() () noexcept = 0;
 
