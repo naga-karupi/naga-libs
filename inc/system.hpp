@@ -12,6 +12,7 @@
 
 #include <vector>
 #include <tuple>
+#include <memory>
 #include <mutex>
 #include <concepts>
 
@@ -34,7 +35,7 @@ class process
 	friend class system;
 
 public:
-	process(): is_running(true)
+	process(): is_running(true), is_stop(false)
 	{
 
 	}
@@ -125,24 +126,17 @@ public:
 	class impl{
 		using ShareObjectType = decltype(ProcessDerived::getType());
 
-		inline static std::vector<ProcessDerived> processes;
 	public:
-		static std::vector<process<ShareObjectType>>& GetProcess() 
-		{
-			return processes;
-		}
+		inline static std::vector<std::shared_ptr<process<ShareObjectType>>> processes{0};
 	};
 
-	template<typename T>
-	impl<T>::processes(0);
-
 	template <typename ProcessDerived>
-	requires std::derived_from<ProcessDerived, process<decltype(ProcessDerived::getType())>>
+	requires processType<ProcessDerived, decltype(ProcessDerived::getType())>
 	static void Add() 
 	{
-		ProcessDerived p;
-		impl<ProcessDerived>();
-		impl<ProcessDerived>::GetProcess().push_back(p);
+		auto p = std::make_shared<ProcessDerived>();
+		
+		impl<ProcessDerived>::processes.push_back(std::dynamic_pointer_cast<process<decltype(ProcessDerived::getType())>>(p));
 		
 	}
 };
