@@ -22,7 +22,7 @@ namespace naga_libs::stm32
 template <typename ObjectType = void*>
 class process
 {
-	static ObjectType share_obj;
+	inline static ObjectType share_obj;
 
 	bool is_running;
 	bool is_stop;
