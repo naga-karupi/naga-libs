@@ -24,15 +24,16 @@ class process
 {
 	inline static ObjectType share_obj;
 
-	bool is_running;
-	bool is_stop;
-
 	static ObjectType getType()
 	{
 		return ObjectType();
 	}
 
 	friend class system;
+
+protected:
+	bool is_running;
+	bool is_stop;
 
 public:
 	process(): is_running(true), is_stop(false)
@@ -72,7 +73,7 @@ public:
 	 * 
 	 * @return constexpr std::tuple<bool, bool> 
 	 */
-	constexpr std::tuple<bool, bool> getStatus() 
+	constexpr std::tuple<bool, bool> getStatus() const noexcept
 	{
 		return {is_running, is_stop};
 	}
