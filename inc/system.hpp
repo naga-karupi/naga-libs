@@ -121,22 +121,23 @@ public:
 	}
 
 	/// @brief 処理の実装
-	template <typename ProcessDerived>
-	requires processType<ProcessDerived, decltype(ProcessDerived::getType())>
+	template <typename ShareObjectType>
 	class impl{
-		using ShareObjectType = decltype(ProcessDerived::getType());
-
+		using SpProcess = process<ShareObjectType>;
 	public:
-		inline static std::vector<std::shared_ptr<process<ShareObjectType>>> processes{0};
+		inline static std::vector<std::shared_ptr<SpProcess>> processes{0};
 	};
 
 	template <typename ProcessDerived>
 	requires processType<ProcessDerived, decltype(ProcessDerived::getType())>
 	static void Add() 
 	{
+		using shareObjectType = decltype(ProcessDerived::getType());
+		using spProcess = process<shareObjectType>;
+
 		auto p = std::make_shared<ProcessDerived>();
 		
-		impl<ProcessDerived>::processes.push_back(std::dynamic_pointer_cast<process<decltype(ProcessDerived::getType())>>(p));
+		impl<shareObjectType>::processes.push_back(std::dynamic_pointer_cast<spProcess>(p));
 		
 	}
 };
