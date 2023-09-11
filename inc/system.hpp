@@ -20,17 +20,29 @@ namespace naga_libs::stm32
 {
 
 template <typename ObjectType = void*>
-class process
+class ShareObject
 {
 	inline static ObjectType share_obj;
+	
+	friend class system;
 
 	static ObjectType getType()
 	{
 		return ObjectType();
 	}
 
-	friend class system;
+public:
 
+	static ObjectType& getShareObject()
+	{
+		static_assert(not std::is_same<void*, ObjectType>(), "You need set share ObjectType");
+		return share_obj;
+	}
+
+};
+
+class process
+{
 protected:
 	bool is_running;
 	bool is_stop;
@@ -44,13 +56,6 @@ public:
 	virtual ~process()
 	{
 
-	}
-
-
-	static ObjectType& getShareObject()
-	{
-		static_assert(not std::is_same<void*, ObjectType>(), "You need set share ObjectType");
-		return share_obj;
 	}
 
 	virtual void pause()
@@ -88,14 +93,8 @@ public:
  * @tparam ProcessDerivedClass 
  * @tparam ShareObjectType 
  */
-template <class ProcessDerivedClass, class ShareObjectType = void*>
-concept processType = requires (ProcessDerivedClass t)
-{
-	t.loop();
-	t.setup();
-	ProcessDerivedClass::getShareObject();
-}
-&& std::derived_from<ProcessDerivedClass, process<ShareObjectType>>;
+template <class ProcessDerivedClass>
+concept processType = std::derived_from<ProcessDerivedClass, process>;
 
 class system
 {
@@ -135,15 +134,11 @@ public:
 	};
 
 	template <typename ProcessDerived>
-	requires processType<ProcessDerived, decltype(ProcessDerived::getType())>
+	requires processType<ProcessDerived>
 	static void Add() 
 	{
-		using shareObjectType = decltype(ProcessDerived::getType());
-		using spProcess = process<shareObjectType>;
-
 		auto p = std::make_shared<ProcessDerived>();
-		
-		impl<shareObjectType>::processes.push_back(std::dynamic_pointer_cast<spProcess>(p));
+		impl::processes.push_back(std::dynamic_pointer_cast<process>(p));
 		
 	}
 };
