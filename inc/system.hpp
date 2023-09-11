@@ -47,12 +47,12 @@ public:
 		return share_obj;
 	}
 
-	virtual void pause() noexcept
+	virtual void pause()
 	{
 		is_running = true;
 	}
 
-	virtual void resume() noexcept
+	virtual void resume()
 	{
 		is_running = true;
 	}
