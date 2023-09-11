@@ -28,6 +28,9 @@ protected:
 	bool is_running;
 	bool is_stop;
 
+private:
+	bool setuped;
+
 public:
 	Process(): is_running(true), is_stop(false), setuped(false)
 	{
@@ -64,6 +67,26 @@ public:
 	virtual void Stop()
 	{
 		is_stop = true;
+	}
+
+	/**
+	 * @brief セットアップカンスの実行の必要性の有無
+	 * 
+	 * @return true セットアップの必要あり
+	 * @return false セットアップの必要なし
+	 */
+	bool NeedSetup() const noexcept
+	{
+		return not setuped;
+	}
+
+	/**
+	 * @brief setupが完了したことを表すコード
+	 * 
+	 */
+	void DoneSetup() noexcept
+	{
+		setuped = true;
 	}
 
 	/**
@@ -144,11 +167,6 @@ public:
 	class ShareObject
 	{
 		inline static ShareObjectType share_obj;
-
-		static ShareObjectType GetType()
-		{
-			return ShareObjectType();
-		}
 
 	public:
 		/**
