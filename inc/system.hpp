@@ -40,6 +40,11 @@ public:
 
 	}
 
+	virtual ~process()
+	{
+
+	}
+
 
 	static ObjectType& getShareObject()
 	{
