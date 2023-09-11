@@ -18,6 +18,10 @@
 
 namespace naga_libs::stm32
 {
+/**
+ * @brief 処理を記述するクラスの親クラス。ここから派生したクラスを用いて制御する。
+ * 
+ */
 class Process
 {
 protected:
@@ -35,37 +39,58 @@ public:
 
 	}
 
+	/**
+	 * @brief 処理の一時停止。デフォルトではフラグのみ
+	 * 
+	 */
 	virtual void Pause()
 	{
 		is_running = true;
 	}
 
+	/**
+	 * @brief 一時停止からの復帰。デフォルトではフラグのみ
+	 * 
+	 */
 	virtual void Resume()
 	{
 		is_running = true;
 	}
 
+	/**
+	 * @brief 処理の停止。復帰は今の所ない(実装予定)
+	 * 
+	 */
 	virtual void Stop()
 	{
 		is_stop = true;
 	}
 
 	/**
-	 * @brief Get the Status object
+	 * @brief Processクラスの状態を返す
 	 * 
-	 * @return constexpr std::tuple<bool, bool> 
+	 * @return std::tuple<bool　is_running, bool is_stop> 
 	 */
 	constexpr std::tuple<bool, bool> GetStatus() const noexcept
 	{
 		return {is_running, is_stop};
 	}
 
+	/**
+	 * @brief 最初に一回だけ実行される。オーバーライドし、処理は各自で定義すること。
+	 * 
+	 */
 	virtual void Setup() = 0;
+
+	/**
+	 * @brief 一定時間ごとに実行される。オーバーライドし、処理は各自で定義すること。
+	 * 
+	 */
 	virtual void Loop() = 0;
 };
 
 /**
- * @brief processの派生型だけを受け取れるようにしたコンセプト
+ * @brief Processの派生型だけを受け取れるようにしたコンセプト
  * 
  * @tparam ProcessDerivedClass 
  * @tparam ShareObjectType 
@@ -73,6 +98,11 @@ public:
 template <class ProcessDerivedClass>
 concept ProcessType = std::derived_from<ProcessDerivedClass, Process>;
 
+/**
+ * @brief 管理クラス
+ * 
+ * @tparam ShareObjectType 共有する型
+ */
 template <typename ShareObjectType = void*>
 class System
 {
@@ -86,7 +116,7 @@ public:
 	/**
 	 * @brief 最大1kHzまで対応だけど、読めるクロックの関係で1ms単位でしか見れないので下手な周波数選ぶといい精度が出ない可能性がある
 	 * 
-	 * @param frequency 
+	 * @param frequency
 	 */
 	static void SetFrequency(float frequency)
 	{
@@ -107,6 +137,10 @@ public:
 		return true;
 	}
 
+	/**
+	 * @brief 共有オブジェクトを提供するクラス。
+	 * 
+	 */
 	class ShareObject
 	{
 		inline static ShareObjectType share_obj;
@@ -117,7 +151,11 @@ public:
 		}
 
 	public:
-
+		/**
+		 * @brief 共有オブジェクトの変更をこのメソッドの呼び出しから行うことができる
+		 * 
+		 * @return ShareObjectType& 共有オブジェクトの参照
+		 */
 		static ShareObjectType& GetShareObject()
 		{
 			static_assert(not std::is_same<void*, ShareObjectType>(), "You need set share ObjectType");
@@ -126,12 +164,20 @@ public:
 
 	};
 
-	/// @brief 処理の実装
+	/**
+	 * @brief 触らないこと
+	 * 
+	 */
 	class impl{
 	public:
 		inline static std::vector<std::shared_ptr<Process>> Processes{0};
 	};
 
+	/**
+	 * @brief Processの追加
+	 * 
+	 * @tparam ProcessDerived Processの派生型
+	 */
 	template <typename ProcessDerived>
 	requires ProcessType<ProcessDerived>
 	static void Add() 
