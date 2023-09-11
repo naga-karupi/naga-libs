@@ -18,30 +18,7 @@
 
 namespace naga_libs::stm32
 {
-
-template <typename ObjectType = void*>
-class ShareObject
-{
-	inline static ObjectType share_obj;
-	
-	friend class system;
-
-	static ObjectType getType()
-	{
-		return ObjectType();
-	}
-
-public:
-
-	static ObjectType& getShareObject()
-	{
-		static_assert(not std::is_same<void*, ObjectType>(), "You need set share ObjectType");
-		return share_obj;
-	}
-
-};
-
-class process
+class Process
 {
 protected:
 	bool is_running;
@@ -124,6 +101,25 @@ public:
 	{
 		return true;
 	}
+
+	class ShareObject
+	{
+		inline static ShareObjectType share_obj;
+
+		static ShareObjectType getType()
+		{
+			return ShareObjectType();
+		}
+
+	public:
+
+		static ShareObjectType& getShareObject()
+		{
+			static_assert(not std::is_same<void*, ShareObjectType>(), "You need set share ObjectType");
+			return share_obj;
+		}
+
+	};
 
 	/// @brief 処理の実装
 	template <typename ShareObjectType>
