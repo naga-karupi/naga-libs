@@ -25,27 +25,27 @@ protected:
 	bool is_stop;
 
 public:
-	process(): is_running(true), is_stop(false)
+	Process(): is_running(true), is_stop(false), setuped(false)
 	{
 
 	}
 
-	virtual ~process()
+	virtual ~Process()
 	{
 
 	}
 
-	virtual void pause()
-	{
-		is_running = true;
-	}
-
-	virtual void resume()
+	virtual void Pause()
 	{
 		is_running = true;
 	}
 
-	virtual void stop()
+	virtual void Resume()
+	{
+		is_running = true;
+	}
+
+	virtual void Stop()
 	{
 		is_stop = true;
 	}
@@ -55,13 +55,13 @@ public:
 	 * 
 	 * @return constexpr std::tuple<bool, bool> 
 	 */
-	constexpr std::tuple<bool, bool> getStatus() const noexcept
+	constexpr std::tuple<bool, bool> GetStatus() const noexcept
 	{
 		return {is_running, is_stop};
 	}
 
-	virtual void setup() = 0;
-	virtual void loop() = 0;
+	virtual void Setup() = 0;
+	virtual void Loop() = 0;
 };
 
 /**
@@ -71,10 +71,15 @@ public:
  * @tparam ShareObjectType 
  */
 template <class ProcessDerivedClass>
-concept processType = std::derived_from<ProcessDerivedClass, process>;
+concept ProcessType = std::derived_from<ProcessDerivedClass, Process>;
 
-class system
+template <typename ShareObjectType = void*>
+class System
 {
+	static uint64_t start_tim;
+
+	void Sleep();
+
 public:
 	static float freq;
 
@@ -83,7 +88,7 @@ public:
 	 * 
 	 * @param frequency 
 	 */
-	static void set_frequency(float frequency)
+	static void SetFrequency(float frequency)
 	{
 		freq = frequency;
 	}
@@ -97,7 +102,7 @@ public:
 	 * @return true 異常なし
 	 * @return false 異常あり
 	 */
-	static bool update()
+	static bool Update()
 	{
 		return true;
 	}
@@ -106,14 +111,14 @@ public:
 	{
 		inline static ShareObjectType share_obj;
 
-		static ShareObjectType getType()
+		static ShareObjectType GetType()
 		{
 			return ShareObjectType();
 		}
 
 	public:
 
-		static ShareObjectType& getShareObject()
+		static ShareObjectType& GetShareObject()
 		{
 			static_assert(not std::is_same<void*, ShareObjectType>(), "You need set share ObjectType");
 			return share_obj;
@@ -122,19 +127,17 @@ public:
 	};
 
 	/// @brief 処理の実装
-	template <typename ShareObjectType>
 	class impl{
-		using SpProcess = process<ShareObjectType>;
 	public:
-		inline static std::vector<std::shared_ptr<SpProcess>> processes{0};
+		inline static std::vector<std::shared_ptr<Process>> Processes{0};
 	};
 
 	template <typename ProcessDerived>
-	requires processType<ProcessDerived>
+	requires ProcessType<ProcessDerived>
 	static void Add() 
 	{
 		auto p = std::make_shared<ProcessDerived>();
-		impl::processes.push_back(std::dynamic_pointer_cast<process>(p));
+		impl::Processes.push_back(std::dynamic_pointer_cast<Process>(p));
 		
 	}
 };
