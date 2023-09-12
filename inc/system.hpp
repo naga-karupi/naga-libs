@@ -15,6 +15,11 @@
 #include <memory>
 #include <concepts>
 
+#if PC_TEST
+#include <iostream>
+#include <chrono>
+#endif //TEST
+
 namespace naga_libs::stm32
 {
 /**
@@ -141,22 +146,41 @@ class System
 		class Timer
 		{
 			inline static uint64_t begin_tim;
-			inline static float freq;
+			inline static float wait_ms;
 
 		public:
 			static void SetFrequency(float frequency)
 			{
-				freq = frequency;
+				wait_ms = 1000.0f / frequency;
 			}
 
 			static void Init() 
 			{
-				//todo
+				
+			#if PC_TEST
+				using namespace std::chrono;
+				auto tp = system_clock::now();
+				begin_tim  = duration_cast<microseconds>(tp.time_since_epoch()).count();
+			#endif //PC_TEST
+				
 			}
 
 			static void Sleep()
 			{
-				//todo
+			#if PC_TEST
+				using namespace std::chrono;
+				while(1)
+				{
+					auto tp = system_clock::now();
+					auto now  = duration_cast<milliseconds>(tp.time_since_epoch()).count();
+					if(now - begin_tim >= wait_ms)
+					{
+						begin_tim = now;
+						break;
+					}
+					
+				}
+			#endif //PC_TEST
 			}
 			
 		};
