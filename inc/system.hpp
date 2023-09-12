@@ -185,6 +185,36 @@ public:
 	 */
 	static bool Update()
 	{
+		[&]() 
+		{
+			if(once_f) 
+				return;
+
+			impl::Timer::Init();
+			once_f = true;
+		}();
+		
+		for (const auto& p : impl::Processes) 
+		{
+			const auto& [is_running, is_stop] = p->GetStatus();
+
+			if(not is_running || is_stop) 
+				continue;
+
+			if (p->NeedSetup())
+			{
+				
+				p->Setup();
+				p->DoneSetup();
+			}
+			else
+			{
+				p->Loop();
+			}
+		}
+
+		impl::Timer::Sleep();
+
 		return true;
 	}
 
