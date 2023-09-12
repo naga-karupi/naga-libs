@@ -13,7 +13,6 @@
 #include <vector>
 #include <tuple>
 #include <memory>
-#include <mutex>
 #include <concepts>
 
 namespace naga_libs::stm32
@@ -129,13 +128,42 @@ concept ProcessType = std::derived_from<ProcessDerivedClass, Process>;
 template <typename ShareObjectType = void*>
 class System
 {
-	static uint64_t start_tim;
+	inline static bool once_f{false};
 
-	void Sleep();
+	/**
+	 * @brief 触らないこと
+	 * 
+	 */
+	struct impl
+	{
+		inline static std::vector<std::shared_ptr<Process>> Processes;
+		
+		class Timer
+		{
+			inline static uint64_t begin_tim;
+			inline static float freq;
+
+		public:
+			static void SetFrequency(float frequency)
+			{
+				freq = frequency;
+			}
+
+			static void Init() 
+			{
+				//todo
+			}
+
+			static void Sleep()
+			{
+				//todo
+			}
+			
+		};
+	};
+
 
 public:
-	static float freq;
-
 	/**
 	 * @brief 最大1kHzまで対応だけど、読めるクロックの関係で1ms単位でしか見れないので下手な周波数選ぶといい精度が出ない可能性がある
 	 * 
@@ -143,7 +171,7 @@ public:
 	 */
 	static void SetFrequency(float frequency)
 	{
-		freq = frequency;
+		impl::Timer::SetFrequency(frequency);
 	}
 
 	/// @brief 制御周期の制御や待機中の他の処理
@@ -180,15 +208,6 @@ public:
 			return share_obj;
 		}
 
-	};
-
-	/**
-	 * @brief 触らないこと
-	 * 
-	 */
-	class impl{
-	public:
-		inline static std::vector<std::shared_ptr<Process>> Processes{0};
 	};
 
 	/**
